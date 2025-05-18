@@ -2,24 +2,43 @@
 <!--As good coding practice add all strings you use though out the project in this file -->
 <resources>
     <string name="app_name">WeatherApp</string>
-    <string name="city">MUMBAI, IN</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search City</string>
+    <string name="search_description">Search</string>
+
+    <string name="city">Los Angeles</string>
     <string name="date_time">20 April 2012, 20:08 PM</string>
-    <string name="sky_type">Clear Sky</string>
-    <string name="temperature">29°C</string>
+    <string name="condition">Sunny</string>
+    <string name="temperature">25°C</string>
     <string name="sunrise">Sunrise</string>
     <string name="time_sunrise">06:40 AM</string>
     <string name="sunset">Sunset</string>
     <string name="time_sunset">06:40 AM</string>
     <string name="wind">Wind</string>
-    <string name="time_wind">06:40 AM</string>
+    <string name="time_wind">2km/h</string>
     <string name="pressure">Pressure</string>
-    <string name="time_pressure">06:40 AM</string>
+    <string name="time_pressure">997hPa</string>
     <string name="humidity">Humidity</string>
-    <string name="time_humidity">06:40 AM</string>
-    <string name="min_temp">Min Temp: 05:05 AM</string>
-    <string name="max_temp">Max Temp: 05:05 PM</string>
+    <string name="time_humidity">41%</string>
+    <string name="min_temp">H: 20</string>
+    <string name="max_temp">L: 30</string>
+    <string name="temperature_unit">°C</string>
     <string name="sunrise_image">sunrise image</string>
     <string name="error_message">Something went wrong</string>
     <string name="search">Search</string>
     <string name="edit_text_hint">Enter City Name</string>
+
+    <!-- Error: City Not Found -->
+    <string name="error_city_not_found_title">City Not Found</string>
+    <string name="error_city_not_found_subtitle">Please enter a valid city name</string>
+
+    <!-- Error: No Connection -->
+    <string name="error_no_connection_title">Please Connect</string>
+    <string name="error_no_connection_subtitle">to Internet</string>
+
+    <!-- Error: Blank Input -->
+    <string name="error_city_blank_title">City Name</string>
+    <string name="error_city_blank_subtitle">Cannot be Blank</string>
+
 </resources>

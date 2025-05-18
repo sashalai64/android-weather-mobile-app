@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -5,9 +8,24 @@ plugins {
     id("kotlin-kapt")
 }
 
+val localPropertiesFile = project.rootProject.file("local.properties")
+val apiKey = if (localPropertiesFile.exists()) {
+    val properties = Properties()
+    FileInputStream(localPropertiesFile).use { fis ->
+        properties.load(fis)
+    }
+    properties.getProperty("OPEN_WEATHER_API_KEY", "") // Provide a default value if key not found
+} else {
+    ""
+}
+
 android {
     namespace = "com.example.weatherapp"
     compileSdk = 34
+
+    buildFeatures {
+        buildConfig = true // Enables BuildConfig generation
+    }
 
     defaultConfig {
         applicationId = "com.example.weatherapp"
@@ -17,6 +35,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Inject the key into BuildConfig
+        buildConfigField("String", "OPEN_WEATHER_API_KEY", "\"$apiKey\"")
+
     }
 
     buildTypes {
@@ -46,6 +68,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     //TODO
     // add gson dependency
+    implementation("com.google.code.gson:gson:2.10.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
