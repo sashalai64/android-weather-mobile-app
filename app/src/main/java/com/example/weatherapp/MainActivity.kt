@@ -1,9 +1,9 @@
 package com.example.weatherapp
 
-import com.example.weatherapp.BuildConfig
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
@@ -19,6 +19,7 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.weatherapp.model.Weather.CurrentWeatherResponse
+import com.example.weatherapp.BuildConfig
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -27,6 +28,9 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +61,9 @@ class MainActivity : AppCompatActivity() {
     val apiKey = BuildConfig.OPEN_WEATHER_API_KEY
     private val BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private var weather: CurrentWeatherResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +71,9 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         // Set the content view for this activity, specifying the layout resource to be used
         setContentView(R.layout.activity_main)
+
+        // Initialize the fusedLocationClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Initialize the view components by finding it by its ID in the layout
         initializeViews()
@@ -104,11 +114,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Get weather for Seattle as default when app starts
+        // Get weather for current location as default
         if (isNetworkAvailable()) {
             showLoading()
-            val url = "$BASE_URL?q=Seattle&units=metric&appid=${apiKey}"
-            fetchWeatherData(url).start()
+            checkLocationPermission()
         } else {
             updateErrorUI("Please connect to internet")
         }
@@ -158,6 +167,65 @@ class MainActivity : AppCompatActivity() {
         noConnectionContainer.visibility = View.GONE
         cityBlankContainer.visibility = View.GONE
         progressBar.visibility = View.VISIBLE
+    }
+
+    /**
+     * Checks for location permission and fetches weather data if granted
+     */
+    private fun checkLocationPermission() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        } else {
+            getCurrentLocationAndFetchWeather()
+        }
+    }
+
+    /**
+    * Handles the result of the location permission request
+    */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE &&
+            grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            getCurrentLocationAndFetchWeather()
+        } else {
+            // If permission is denied, fallback to Seattle
+            val defaultUrl = "$BASE_URL?q=Seattle&units=metric&appid=$apiKey"
+            fetchWeatherData(defaultUrl).start()
+        }
+    }
+
+    /**
+     * Gets the current location and fetches weather data for that location
+     */
+    @SuppressLint("MissingPermission") // You already check permission before calling this
+    private fun getCurrentLocationAndFetchWeather() {
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val lat = location.latitude
+                    val lon = location.longitude
+                    val url = "$BASE_URL?lat=$lat&lon=$lon&units=metric&appid=$apiKey"
+                    fetchWeatherData(url).start()
+                } else {
+                    // fallback if location is null
+                    val defaultUrl = "$BASE_URL?q=Seattle&units=metric&appid=$apiKey"
+                    fetchWeatherData(defaultUrl).start()
+                }
+            }
+            .addOnFailureListener {
+                val defaultUrl = "$BASE_URL?q=Seattle&units=metric&appid=$apiKey"
+                fetchWeatherData(defaultUrl).start()
+            }
     }
 
     /**
