@@ -46,7 +46,7 @@ The user interface was designed in [Figma](https://www.figma.com/):
 2.  Open the project in Android Studio
    
 3.  Add your OpenWeatherMap API key:
-    - In the project root, create a file named ```local.properties``` if it doesn't already exist
+    - In the project root, create a file named `local.properties` if it doesn't already exist
       
     - Add the following line (replace your_key_here with your actual API key):
       
@@ -65,13 +65,13 @@ This app uses the [OpenWeatherMap API](https://openweathermap.org/api) to fetch 
 
 - Sign up for an account at OpenWeatherMap
 - Generate an API key
-- Add it to the ```apikey.properties``` file as described in the setup instructions
+- Add it to the `local.properties` file as described in the setup instructions
 
 
 ## Permissions
 The app requires the following permissions:
 
-- ```INTERNET```: To fetch weather data from the API
-- ```ACCESS_NETWORK_STATE```: To check network connectivity
-- ```ACCESS_FINE_LOCATION```: To get the device's current location
-- ```ACCESS_COARSE_LOCATION```: As a fallback for location services
+- `INTERNET`: To fetch weather data from the API
+- `ACCESS_NETWORK_STATE`: To check network connectivity
+- `ACCESS_FINE_LOCATION`: To get the device's current location
+- `ACCESS_COARSE_LOCATION`: As a fallback for location services
